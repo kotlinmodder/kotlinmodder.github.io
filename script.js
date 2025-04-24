@@ -53,7 +53,7 @@ function renderContributionActivity(contributions) {
     const activityHtml = contributions.map(contribution => {
         return `
             <div class="activity">
-                <p>Contributed ${contribution.contributions} times to <a href="https://github.com/${username}/${contribution.repo}">${contribution.repo}</a></p>
+                <p>Contributed to <a href="https://github.com/${username}/${contribution.repo}">${contribution.repo}</a></p>
             </div>
         `;
     }).join('');
