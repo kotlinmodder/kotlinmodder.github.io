@@ -2,7 +2,7 @@
 const repoList = document.getElementById('repo-list');
 const activityList = document.getElementById('activity-list');
 
-const username = 'KotlinModder';
+const username = 'kotlinmodder';
 
 // Function to fetch repositories
 async function fetchRepositories() {
