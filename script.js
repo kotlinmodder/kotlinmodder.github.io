@@ -7,7 +7,7 @@ const username = 'KotlinModder';
 // Function to fetch repositories
 async function fetchRepositories() {
     try {
-        const response = await fetch(`https://api.github.com/users/${username}/repos`);
+        const response = await fetch(`https://api.github.com/users/${username}/repos?sort=pushed&direction=desc`);
         const data = await response.json();
         renderRepositories(data);
     } catch (error) {
@@ -28,23 +28,32 @@ function renderRepositories(repos) {
     repoList.innerHTML = repoHtml;
 }
 
-// Function to fetch github activity
-async function fetchGithubActivity() {
+// Function to fetch contribution activity
+async function fetchContributionActivity() {
     try {
-        const response = await fetch(`https://api.github.com/users/${username}/events`);
+        const response = await fetch(`https://api.github.com/users/${username}/repos?sort=pushed&direction=desc`);
         const data = await response.json();
-        renderGithubActivity(data);
+        const contributions = await Promise.all(data.map(async repo => {
+            const repoResponse = await fetch(`https://api.github.com/repos/${username}/${repo.name}/contributors`);
+            const repoData = await repoResponse.json();
+            const contributor = repoData.find(contributor => contributor.login === username);
+            return {
+                repo: repo.name,
+                contributions: contributor ? contributor.contributions : 0
+            };
+        }));
+        renderContributionActivity(contributions);
     } catch (error) {
-        console.error('Error fetching github activity:', error);
+        console.error('Error fetching contribution activity:', error);
     }
 }
 
-// Function to render github activity
-function renderGithubActivity(events) {
-    const activityHtml = events.map(event => {
+// Function to render contribution activity
+function renderContributionActivity(contributions) {
+    const activityHtml = contributions.map(contribution => {
         return `
             <div class="activity">
-                <p>${event.type} on <a href="${event.repo.url}">${event.repo.name}</a></p>
+                <p>Contributed ${contribution.contributions} times to <a href="https://github.com/${username}/${contribution.repo}">${contribution.repo}</a></p>
             </div>
         `;
     }).join('');
@@ -53,4 +62,4 @@ function renderGithubActivity(events) {
 
 // Call functions to fetch data
 fetchRepositories();
-fetchGithubActivity();
+fetchContributionActivity();
